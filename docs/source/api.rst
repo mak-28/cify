@@ -12,5 +12,4 @@ from the options in the sidebar.
    :caption: Expanded Tree:
 
    modules/cify.core
-   modules/cify.ec
-   modules/cify.si
+   modules/cify.pso

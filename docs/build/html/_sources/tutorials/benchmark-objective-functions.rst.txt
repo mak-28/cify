@@ -1,5 +1,0 @@
-Benchmark Objective Functions
-=====================================
-
-.. note::
-   This page will contain a table listing all provided benchmark functions.

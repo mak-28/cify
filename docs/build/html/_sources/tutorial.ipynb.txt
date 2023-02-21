@@ -1,0 +1,480 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "source": [
+    "# Tutorial\n",
+    "\n",
+    "This basic tutorial is aimed at walking you through the different parts of CIFY (Computational Intelligence Framework for pYthon). Throughout the tutorial you will see practical examples represented through blocks of code. These blocks of code are verified during the documentation processing and will always be up-to-date with the referenced version of CIFY. By the end of the tutorial, you will have built your first algorithm in CIFY.\n",
+    "\n",
+    "## Position\n",
+    "\n",
+    "The vectors within a population-based optimization algorithm (such as evolutionary and swarm-intelligence algorithms) represent the possible solutions to the current optimization problem. These \"candidate solutions\" are locations within the problem search space which the optimization problem is currently evaluating. Candidate solutions in CIFY are represented by the `Position` class."
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[1 2 3 4 5] -> None\n"
+     ]
+    }
+   ],
+   "source": [
+    "from cify import Position\n",
+    "position = Position([1, 2, 3, 4, 5])\n",
+    "print(position)"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "In the code above, we have just created our first `Position`. Alternatively, we could have created the position from a numpy array."
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[1 2 3 4 5] -> None\n"
+     ]
+    }
+   ],
+   "source": [
+    "import numpy as np\n",
+    "position = Position(np.array([1, 2, 3, 4, 5]))\n",
+    "print(position)"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "The `Position` class uses numpy to store the decision vector and will convert any list-type inputs into numpy arrays. Notice the `None` on the right hand side of the output — this is the objective function value of the decision vector. Since we hane not yet evaluated the decision vector, the value of the position is `None`. Let's define a function to evaluate the position."
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "outputs": [
+    {
+     "data": {
+      "text/plain": "55"
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "f = lambda vector: np.sum(vector ** 2)\n",
+    "position.eval(f)"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "`position(f)` is also a valid approach to evaluating the decision vector. Now, let's inspect the value of the position."
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "outputs": [
+    {
+     "data": {
+      "text/plain": "55"
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "position.value"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "Modifications to the position reset the objective function value since that value is no longer a result of the decision vector."
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[1 2 3 4 5] -> 55\n",
+      "[2 3 4 5 6] -> None\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(position)\n",
+    "position = position + 1\n",
+    "print(position)"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "The `Position` class supports arithmetic operators like `+`, `-`, `*` and `/`, as well as comparison operators like `>`, `<`, `=>` and `<=`. For example:"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "outputs": [
+    {
+     "data": {
+      "text/plain": "True"
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "a = Position(np.random.uniform(0.0, 1.0, 10))\n",
+    "b = Position(np.random.uniform(0.0, 1.0, 10))\n",
+    "b += 1\n",
+    "a(f)\n",
+    "b(f)\n",
+    "a < b"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "## Objective Function\n",
+    "\n",
+    "The second class we'll look at is the `ObjectiveFunction` class which represents a function to be optimized."
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Minimizing: sphere\n",
+      "Bounds: [[0.0, 1.0], [0.0, 1.0], [0.0, 1.0], [0.0, 1.0], [0.0, 1.0], [0.0, 1.0], [0.0, 1.0], [0.0, 1.0], [0.0, 1.0], [0.0, 1.0]]\n"
+     ]
+    }
+   ],
+   "source": [
+    "from cify import ObjectiveFunction, Optimization\n",
+    "f = lambda vector: np.sum(vector ** 2)\n",
+    "bounds = [0.0, 1.0]\n",
+    "dim = 10\n",
+    "sphere_of = ObjectiveFunction(f, bounds, dim, Optimization.Min, \"sphere\")\n",
+    "print(sphere_of)"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "Alternatively, we could have also initialized the same `ObjectiveFunction` as follows:"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Minimizing: sphere\n",
+      "Bounds: [[0, 1], [0, 1], [0, 1], [0, 1], [0, 1]]\n"
+     ]
+    }
+   ],
+   "source": [
+    "def sphere(vector):\n",
+    "    return np.sum(vector ** 2)\n",
+    "\n",
+    "sphere_of = ObjectiveFunction(sphere, [0, 1], 5, Optimization.Min)\n",
+    "print(sphere_of)"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "Notice that if a name is not passed to the `ObjectiveFunction` on initialization, then the name of the function is used.\n",
+    "\n",
+    "We can also use an `ObjectiveFunction` to create a `Position`."
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[0.54601141 0.87393108 0.45285016 0.81232084 0.51217483] -> 2.1891454540999837\n"
+     ]
+    }
+   ],
+   "source": [
+    "position = Position(sphere_of)\n",
+    "print(position)"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "Let's say that we modify our position"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "## Optimization\n"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "## Algorithm\n",
+    "\n",
+    "\n",
+    "## Task"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "CIFY provides a minimal class for implementing algorithms, i.e. `Algorithm`. The only method that you need to implement is `iterate`. Let's implement a genetic algorithm using the methods provided by the `CIFY` ga package."
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "outputs": [],
+   "source": [
+    "from cify import Algorithm\n",
+    "from cify.ga import mutate, top, uniform_crossover\n",
+    "\n",
+    "class GA(Algorithm):\n",
+    "    def __init__(self, n: int,\n",
+    "                 f: ObjectiveFunction,\n",
+    "                 pc: float = 0.5,\n",
+    "                 pm: float = 0.5,\n",
+    "                 ms: float = 0.15):\n",
+    "        \"\"\"\n",
+    "        pc: probability of crossover (favoring parent a)\n",
+    "        pm: probability of mutation\n",
+    "        ms: mutation severity, e.g +- 15%.\n",
+    "        \"\"\"\n",
+    "        super().__init__()\n",
+    "        self.individuals = [Position(f) for _ in range(n)]\n",
+    "        self.pm = pm\n",
+    "        self.pc = pc\n",
+    "        self.ms = ms\n",
+    "\n",
+    "    def iterate(self, f: ObjectiveFunction):\n",
+    "        n = len(self.individuals) // 2\n",
+    "        elite = top(n, self.individuals, f.opt)\n",
+    "        next_gen = []\n",
+    "        for parent_a in elite:\n",
+    "            parent_b_idx = int(np.random.uniform(0, len(elite) - 1))\n",
+    "            parent_b = elite[parent_b_idx]\n",
+    "            child_1, child_2 = uniform_crossover(parent_a, parent_b, self.pc)\n",
+    "            child_1 = mutate(child_1, self.pm, self.ms)\n",
+    "            child_2 = mutate(child_1, self.pm, self.ms)\n",
+    "            child_1(f)\n",
+    "            child_2(f)\n",
+    "            next_gen.append(child_1)\n",
+    "            next_gen.append(child_2)\n",
+    "\n",
+    "        self.individuals = next_gen"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "Once again, using the `Algorithm` class is optional."
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "outputs": [
+    {
+     "ename": "NameError",
+     "evalue": "name 'Task' is not defined",
+     "output_type": "error",
+     "traceback": [
+      "\u001B[0;31m---------------------------------------------------------------------------\u001B[0m",
+      "\u001B[0;31mNameError\u001B[0m                                 Traceback (most recent call last)",
+      "Cell \u001B[0;32mIn[11], line 3\u001B[0m\n\u001B[1;32m      1\u001B[0m f \u001B[38;5;241m=\u001B[39m ObjectiveFunction(\u001B[38;5;28;01mlambda\u001B[39;00m x: \u001B[38;5;28msum\u001B[39m(x \u001B[38;5;241m*\u001B[39m\u001B[38;5;241m*\u001B[39m \u001B[38;5;241m2\u001B[39m), [\u001B[38;5;241m0\u001B[39m, \u001B[38;5;241m1\u001B[39m], \u001B[38;5;241m3\u001B[39m)\n\u001B[1;32m      2\u001B[0m pso \u001B[38;5;241m=\u001B[39m GA(\u001B[38;5;241m30\u001B[39m, f)\n\u001B[0;32m----> 3\u001B[0m task \u001B[38;5;241m=\u001B[39m \u001B[43mTask\u001B[49m(pso, f, max_iterations\u001B[38;5;241m=\u001B[39m\u001B[38;5;241m200\u001B[39m, log_iterations\u001B[38;5;241m=\u001B[39m\u001B[38;5;241m20\u001B[39m)\n\u001B[1;32m      4\u001B[0m task\u001B[38;5;241m.\u001B[39mrun()\n",
+      "\u001B[0;31mNameError\u001B[0m: name 'Task' is not defined"
+     ]
+    }
+   ],
+   "source": [
+    "\n",
+    "    f = ObjectiveFunction(lambda x: sum(x ** 2), [0, 1], 3)\n",
+    "    pso = GA(30, f)\n",
+    "    task = Task(pso, f, max_iterations=200, log_iterations=20)\n",
+    "    task.run()"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "outputs": [],
+   "source": [
+    "\n",
+    "        self.start()\n",
+    "        while not self.stopping_condition():\n",
+    "            self.optimizer.iterate(self.f)\n",
+    "            if self.metrics:\n",
+    "                for name, metric in self.metrics:\n",
+    "                    self.results[name].append(metric(self.optimizer, self.f))\n",
+    "            self.next_iteration()\n",
+    "        self.end()"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "outputs": [],
+   "source": [
+    "    best = lambda alg: alg.particles\n",
+    "    f = ObjectiveFunction(lambda x: sum(x ** 2), [0, 1], 10)\n",
+    "    pso = PSO(30, f, 0.74, 1.4, 1.4)\n",
+    "    task = Task(pso, f, max_iterations=200, log_iterations=20, metrics=[(\"best_position\", best_position)])\n",
+    "    task.run()\n",
+    "    logger.info(task.results[\"best_position\"][-1])"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "## conclusion\n"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 2
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython2",
+   "version": "2.7.6"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 0
+}

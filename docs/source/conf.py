@@ -19,11 +19,11 @@ sys.path.append(os.path.abspath("../.."))
 # -- Project information -----------------------------------------------------
 
 project = "CIFY"
-copyright = "2022, David McCleave"
-author = "David McCleave"
+copyright = "2023, AEPG"
+author = "AEPG"
 
 # The full version, including alpha/beta/rc tags
-release = "1.0"
+release = "0.1"
 
 
 # -- General configuration ---------------------------------------------------
@@ -40,7 +40,7 @@ autodoc_default_options = {
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
-    "nbsphinx",
+    "nbsphinx"
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -49,7 +49,7 @@ templates_path = ["_templates"]
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['modules/cify.rst']
+exclude_patterns = []
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -58,8 +58,9 @@ exclude_patterns = ['modules/cify.rst']
 # a list of builtin themes.
 #
 html_theme = "furo"
+html_title = "CIFY"
 html_theme_options = {
-    'navigation_with_keys': True,
+    'navigation_with_keys': True
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
