@@ -2,7 +2,7 @@
 [![Python](https://img.shields.io/badge/python-3.10-blue.svg)]()
 [![License](https://img.shields.io/pypi/l/cify)](https://opensource.org/licenses/MIT)
 
-<img src=docs/images/cify-main-logo-slogan.png alt="logo"/>
+<img src=docsrc/images/cify-main-logo-slogan.png alt="logo"/>
 
 The official repository for the Python CI framework, formerly known as CIFY.
 This open-source framework provides easy access to static methods and classes that
