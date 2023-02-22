@@ -43,13 +43,21 @@ class Optimization(Enum):
         return operator.gt(a, b)
 
     def best(self, a, b) -> bool:
-        """ """
+        """
+        Use ``cmp`` to return the better parameter.
+
+        :return: ``a`` if ``cmp(a,b) is True otherwise ``b``.
+        """
         if self.value == 1:
             return a if operator.lt(a, b) else b
 
         return a if operator.gt(a, b) else b
 
     def default(self):
+        """
+        :return: A worst case value, i.e ``np.inf`` for ``Min`` and ``-np.inf`` 
+        for ``Max``.
+        """
         if self.value == 1:
             return np.inf
 
@@ -57,7 +65,7 @@ class Optimization(Enum):
 
     def verb(self) -> str:
         """
-        Returns a verb representation of the optimization type.
+        :return: A verb representation of the optimization type.
         """
         if self.value == 1:
             return "Minimizing"

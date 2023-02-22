@@ -6,4 +6,7 @@ __all__ = ["positions"]
 
 
 def positions(n: int, f: ObjectiveFunction):
+    """
+    :return: A list of n positions.
+    """
     return [Position(f=f) for _ in range(n)]

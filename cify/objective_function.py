@@ -121,7 +121,7 @@ class ObjectiveFunction(object):
 
     def cmp(self, a, b) -> bool:
         """
-        :return: Whether ``a`` is better than ``b``.
+        Returns whether ``a`` is better than ``b``.
         """
         return self.opt.cmp(a, b)
 
@@ -140,6 +140,10 @@ class ObjectiveFunction(object):
         return self.value
 
     def in_bounds(self, vector: Union[np.ndarray, List], index: int = None):
+        """
+        Returns whether the vector is within the bounds of the optimization
+        problem.
+        """
         if index:
             lower, upper = self.bounds[index]
             return lower <= vector[index] <= upper
@@ -165,6 +169,9 @@ class ObjectiveFunction(object):
         return [i[1] for i in self.__bounds]
 
     def sample(self) -> np.ndarray:
+        """
+        Uniformly samples a vector from the bounds of the optimization problem.
+        """
         position = []
         for i in range(len(self.bounds)):
             lower, upper = self.bounds[i]

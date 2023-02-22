@@ -1,3 +1,4 @@
+from operator import floordiv
 import time
 
 import numpy as np
@@ -40,21 +41,27 @@ class Task(object):
         self.metrics = metrics
         self.results = {}
         if metrics:
-            for name, metric in metrics:
+            for name, _ in metrics:
                 self.results[name] = []
 
-    def evaluate(self, x):
+    def eval(self, vector) -> float:
+        """
+        :return: The objective function value of the vector.
+        """
         if self.stopping_condition():
-            return np.inf * self.opt.value
+            return self.opt.default()
 
-        self.value = self.f(x)
+        self.value = self.f(vector)
 
         if self.log_evaluations and self.f.evaluations % self.log_evaluations == 0:
             self.log()
 
         return self.value
 
-    def stopping_condition(self):
+    def stopping_condition(self) -> bool:
+        """
+        :return: Whether the stopping condition has been reached.
+        """
         if self.f.evaluations >= self.max_evaluations:
             return True
 
@@ -67,12 +74,18 @@ class Task(object):
         return False
 
     def next_iteration(self):
+        """
+        Increments the iterations counter.
+        """
         self.iterations += 1
 
         if self.log_iterations and self.iterations % self.log_iterations == 0:
             self.log()
 
     def run(self):
+        """
+        Optimizes the objective function.
+        """
         self.start()
         while not self.stopping_condition():
             self.optimizer.iterate(self.f)
@@ -83,14 +96,23 @@ class Task(object):
         self.end()
 
     def start(self):
+        """
+        Start recording the time taken to optimize.
+        """
         self.start_time = time.time()
 
     def end(self):
+        """
+        End recording the time taken to optimize.
+        """
         self.start_time = time.time()
 
-    def time_taken(self):
+    def time_taken(self) -> float:
+        """
+        :return: Time taken in seconds to optimize..
+        """
         if self.start_time is None:
-            return None
+            return 0.0
 
         if self.end_time is None:
             return time.time() - self.start_time
