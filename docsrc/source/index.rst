@@ -22,31 +22,59 @@ The guiding principles of the project are:
 Quickstart
 ----------
 
-Install pip using
+Install cify using pip
 
 ::
 
    pip install cify
 
+or clone the repo and install cify to your environment using
+
 ::
 
-   import cify
-   from cify.si.pso.algorithm import InertiaWeightPSO
+   cd CIFY
+   pip install -e .
+
+Using the following example to get started or refer to the documentation for more
+details.
+
+::
+
+   import numpy as np
+
+   from cify import ObjectiveFunction, Optimization, Task, set_seed
+   from cify.ga import GA
 
    # 1. Set internal seed for stochastic operations.
    set_seed(0)
 
-   # 2. Call or define an objective function.
-   obj_func = ci.get_objective_function('rosenbrock', ci.Optimization.Min)
+   # 2. Define an objective function.
+   bounds = [0.0, 1.0]
+   dim = 10
+   sphere = ObjectiveFunction(lambda vector: np.sum(vector ** 2),
+                              bounds,
+                              dim,
+                              Optimization.Min,
+                              "sphere")
 
-   # 3. Create swarm and algorithm.
-   pso = InertiaWeightPSO(obj_func, swarms=[ci.get_swarm(10, obj_func=obj_func)])
+   # 3. Create an algorithm.
+   ga = GA(30, sphere)
 
-   # 4. Execute
-   pso.execute(n_iterations=100)
+   # 4. Define a performance metric
+   def metric(ga: GA, f: ObjectiveFunction) -> float:
+       return sorted(ga.individuals)[0]
 
-   # Examine results
-   pso.statistics.tail(5)
+   # 5. Create a task to run the algorithm.
+   task = Task(ga,
+               sphere,
+               max_iterations=1000,
+               log_iterations=100,
+               metrics=[("best_of_value", metric)])
+
+   # 6. Execute
+   task.run()
+   print(task.results["best_of_value"][-1])
+
 
 Contributing
 ------------

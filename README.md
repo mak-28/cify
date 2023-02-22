@@ -4,49 +4,71 @@
 
 <img src=docsrc/images/cify-main-logo-slogan.png alt="logo"/>
 
-The official repository for the Python CI framework, formerly known as CIFY.
-This open-source framework provides easy access to static methods and classes that
-simplify the process of nature-inspired optimization in Python. For more information,
-consult the Documentation_.
+CIFY is a framework for computational intelligence algorithms written in
+Python. The goal of the project is to create a framework that allows users to
+easily and reliably implement nature-inspired metaheuristics. The framework
+provides a set of very simple abstractions for implementing metaheuristics,
+objective functions, running experiments and collecting results.
 
-Installation
----
+The guiding principles of the project are: 
 
-First, it is necessary to make sure you have a working Python 3 environment installed.
+- **Low barrier of entry**. Reading the tutorial or looking at the examples is
+  all you should need to start working with CIFY.
+- **Reproducibility**. Experiments with stochastic operations should be easily
+  reproducible.
+- **Speed**. Computational time should be kept to a minimum.
+- **Tests and documentation**. All code should be thoroughly tested and
+  documented.
 
-To install the latest stable release via `pip`:
+## Quickstart
 
 ```bash
 pip install cify
 ```
 
-Example
----
+or clone the repo and install cify to your environment using
 
-Below is a simple example that first sets a global seed for all stochastic operations,
-then defines an objective function to optimize, optimizes this function using a PSO
-algorithm, and finally, outputs the results of the last five iterations.
-
-```python
-import cify as ci
-from cify.si.pso.algorithm import InertiaWeightPSO
-
-# Set internal seed
-ci.set_seed(0)
-
-# 1. Define objective function.
-obj_func = ci.get_objective_function('rosenbrock', ci.Optimization.Min)
-
-# 2. Create swarm and metaheuristic.
-swarm = ci.get_swarm(50, obj_func=obj_func)
-pso = InertiaWeightPSO(obj_func, swarms=[swarm])
-
-# 3. Perform 100 iterations and return the statistics of the last 5.
-pso.execute(100)
-pso.statistics.tail(5)
+```bash
+cd CIFY
+pip install -e .
 ```
 
-Contributing
----
-If you wish to contribute to CIFY, you'll need to clone the repository and install the necessary
-dependencies first. The steps are outlined in a tutorial on the Documentation_ website.
+Using the following example to get started or refer to the documentation for more
+details.
+
+```python
+import numpy as np
+
+from cify import ObjectiveFunction, Optimization, Task, set_seed
+from cify.ga import GA
+
+# 1. Set internal seed for stochastic operations.
+set_seed(0)
+
+# 2. Define an objective function.
+bounds = [0.0, 1.0]
+dim = 10
+sphere = ObjectiveFunction(lambda vector: np.sum(vector ** 2),
+                          bounds,
+                          dim,
+                          Optimization.Min,
+                          "sphere")
+
+# 3. Create an algorithm.
+ga = GA(30, sphere)
+
+# 4. Define a performance metric
+def metric(ga: GA, f: ObjectiveFunction) -> float:
+   return sorted(ga.individuals)[0]
+
+# 5. Create a task to run the algorithm.
+task = Task(ga,
+           sphere,
+           max_iterations=1000,
+           log_iterations=100,
+           metrics=[("best_of_value", metric)])
+
+# 6. Execute
+task.run()
+print(task.results["best_of_value"][-1])
+```
