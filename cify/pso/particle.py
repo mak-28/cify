@@ -29,6 +29,8 @@ class Particle(object):
 
         if isinstance(position, Position):
             self.__position = position
+        elif position is None:
+            self.__position = Position(f)
         else:
             self.__position = Position(position, f)
 

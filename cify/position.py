@@ -83,7 +83,8 @@ class Position(object):
 
     def copy(self):
         """Returns a deep copy of the :class:`Position` object."""
-        return Position(vector=self.vector.copy(), value=self.value)
+        vector = self.vector.copy()
+        return Position(vector)
 
     def eval(self, f):
         """
